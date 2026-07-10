@@ -59,6 +59,34 @@ async def test_get_ad_not_found(client: AsyncClient) -> None:
     assert resp.json()["detail"] == "Ad not found"
 
 
+async def test_increment_ad_views(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    created = await _create_ad(client, auth_headers)
+
+    resp = await client.post(f"/ads/{created['id']}/views")
+    assert resp.status_code == 204
+
+    resp = await client.get(f"/ads/{created['id']}")
+    assert resp.json()["views"] == 1
+
+
+async def test_increment_ad_views_not_found(client: AsyncClient) -> None:
+    resp = await client.post("/ads/999/views")
+    assert resp.status_code == 404
+    assert resp.json()["detail"] == "Ad not found"
+
+
+async def test_increment_ad_views_on_archived_not_found(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    created = await _create_ad(client, auth_headers)
+    await client.delete(f"/ads/{created['id']}", headers=auth_headers)
+
+    resp = await client.post(f"/ads/{created['id']}/views")
+    assert resp.status_code == 404
+
+
 async def test_list_ads_returns_all_active(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:

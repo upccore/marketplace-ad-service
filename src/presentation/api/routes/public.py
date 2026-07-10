@@ -6,6 +6,7 @@ from src.presentation.api.dependencies import (
     CurrentUserIdDep,
     DeleteAdDep,
     GetAdDep,
+    IncrementAdViewsDep,
     ListAdsDep,
     UpdateAdDep,
 )
@@ -70,6 +71,21 @@ async def get_ad(
             detail="Ad not found",
         )
     return AdResponse.from_view(view)
+
+
+@router.post("/{ad_id}/views", status_code=status.HTTP_204_NO_CONTENT)
+async def increment_ad_views(
+    ad_id: int,
+    usecase: IncrementAdViewsDep,
+) -> Response:
+    try:
+        await usecase.execute(ad_id)
+    except AdNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ad not found",
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
