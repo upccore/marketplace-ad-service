@@ -18,7 +18,7 @@ migrate-create:
 	uv run alembic revision --autogenerate -m "$(name)"
 
 run:
-	uv run python -m bin.api
+	PORT=8002 uv run python -m bin.api
 
 outbox:
 	uv run python -m bin.outbox
