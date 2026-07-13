@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from aiokafka import AIOKafkaProducer
 
@@ -10,11 +9,12 @@ from src.infrastructure.persistence.database import (
     create_session_factory,
 )
 from src.infrastructure.persistence.uow import SQLAlchemyUnitOfWork
+from src.logging_config import configure_logging
 from src.settings import Settings
 
 
 async def main() -> None:
-    logging.basicConfig(level=logging.INFO)
+    configure_logging()
     settings = Settings()
     engine = create_engine(settings)
     session_factory = create_session_factory(engine)
