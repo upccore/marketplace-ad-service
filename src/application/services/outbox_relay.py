@@ -44,6 +44,7 @@ class OutboxRelay:
                         "event": message.event_type,
                         "payload": message.payload,
                     },
+                    trace_id=message.trace_id,
                 )
 
             await uow.outbox.mark_published([m.id for m in messages])
